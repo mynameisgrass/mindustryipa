@@ -40,12 +40,15 @@ jobs:
           chmod +x gradlew
           ./gradlew extractMetalANGLEKit
 
-      - name: Disable iOS Signing
+      - name: Disable iOS Signing & Fix Configs
         run: |
           cd Mindustry
           # Modify ios/build.gradle to skip signing and fix app build
           sed -i '' 's/iosSkipSigning = false/iosSkipSigning = true/g' ios/build.gradle
           sed -i '' "s/props\['app.build'\] = .*/props['app.build'] = '1'/g" ios/build.gradle || true
+          
+          # Remove obsolete arc.framework which no longer exists in modern Arc and causes clang++ linker errors
+          sed -i '' '/<framework>arc<\/framework>/d' ios/robovm.xml
       
       - name: Build IPA
         run: |
