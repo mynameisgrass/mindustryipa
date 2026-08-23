@@ -34,15 +34,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup Arc Natives
+        run: |
+          cd Arc
+          chmod +x gradlew
+          ./gradlew extractMetalANGLEKit
+
       - name: Disable iOS Signing
         run: |
           cd Mindustry
           # Modify ios/build.gradle to skip signing and fix app build
           sed -i '' 's/iosSkipSigning = false/iosSkipSigning = true/g' ios/build.gradle
           sed -i '' "s/props\['app.build'\] = .*/props['app.build'] = '1'/g" ios/build.gradle || true
-          
-          # Ensure localArc is forced since we checked it out
-          echo "noLocalArc=false" >> gradle.properties || true
       
       - name: Build IPA
         run: |
